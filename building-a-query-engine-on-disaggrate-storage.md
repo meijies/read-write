@@ -30,7 +30,7 @@
 
 ## 系统概览
 
-[snowflake warehouse architecute](snowflake-warehouse-architecture.png)
+![snowflake warehouse architecute](snowflake-warehouse-architecture.png)
 
 **1) 云服务 (Cloud Services)**
 
@@ -49,7 +49,7 @@
 
 ## 查询执行过程
 
-[execution-step](execution-step.png)
+![execution-step](execution-step.png)
 
 ## 工程实现 (弹性本地临时存储)
 
@@ -62,4 +62,16 @@
 
 ### 持久化数据缓存
 
-临时数据生命周期比较短，需要内存和存储容量的峰值很大，均值较小，那么临时数据没有用到的存储空间可以用来缓存持久化数据。
+临时数据生命周期比较短，需要内存和存储容量的峰值很大，均值较小，那么临时数据没有用到的本地存储空间可以用来缓存持久化数据。
+给定文件名的持久化数据文件使用一致性 Hash 算法缓存到映射的节点，使用 LRU 算法缓存和驱逐持久化数据文件。采用 Write Through
+的缓存机制来保证远程持久化存储和缓存的一致性 (远程持久化文件是不可变的，甚至不能 Append)。
+
+### 查询任务调度
+
+基于任务需要读取的持久化文件名使用一致性 Hash 算法调度到给定的节点（和持久化文件缓存规则一致）。采用工作窃取(Work Stealing)
+来解决一致性 Hash 任务调度模式带来的负载不均衡问题。为了避免进一步增加过载节点的负载，窃取任务的节点从远程持久化存储读取数据，
+而不是从被窃取任务的节点。
+
+### 资源弹性
+
+
