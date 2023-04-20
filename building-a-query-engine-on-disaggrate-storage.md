@@ -30,14 +30,12 @@
 
 ## 系统概览
 
-![snowflake warehouse architecute](snowflake-warehouse-architecture.png)
+![snowflake warehouse architecute](snowflake-warehouse-architecture.png = 200 x 200)
 
 **1) 云服务 (Cloud Services)**
-
 中心化控制层，作为用户提交查询的入口并提供访问控制、生成执行计划并做优化、事务管理、并发控制、调度执行等功能。
 
-**2）虚拟仓库抽象 (Virtual Warehouse abstraction)**
-
+**2) 虚拟仓库抽象 (Virtual Warehouse abstraction)**
 用户通过虚拟仓库来访问集群计算资源，本质上代表一组节点实例，用来执行分布式查询。虚拟仓库通过增加删除节点的方式
 进行弹性伸缩，通过预热的公共节点池来避免冷启动的问题。
 
@@ -49,7 +47,7 @@
 
 ## 查询执行过程
 
-![execution-step](execution-step.png)
+![execution-step](execution-step.png = 200 x 200)
 
 ## 工程实现 (弹性本地临时存储)
 
@@ -74,4 +72,7 @@
 
 ### 资源弹性
 
-
+由于计算和持久化存储分离的设计使得它们能够独立得弹性伸缩，持久化存储的弹性由云存储实现。而计算弹性，VM 通过增加删除来自预热
+节点池中的节点来实现。由于使用一致性 Hash 算法来调度任务和缓存文件，如果增加和删除节点进行大量数据 Shuffle，会严重影响当前
+正在执行的数据查询，数据摄入任务。为了避免这种情况，增加节点前已经分配的任务继续在原来的节点执行，新的任务会被调度到新的节点上，
+数据重新从远程持久化存储中读取。而原来节点上的中间件数据，缓存文件会由于长时间没有访问，被新的数据驱逐。
