@@ -30,7 +30,7 @@
 
 ## 系统概览
 
-![snowflake warehouse architecute](snowflake-warehouse-architecture.png = 200 x 200)
+<img src="./snowflake-warehouse-architecture.png" width="80%" />
 
 **1) 云服务 (Cloud Services)**
 中心化控制层，作为用户提交查询的入口并提供访问控制、生成执行计划并做优化、事务管理、并发控制、调度执行等功能。
@@ -47,7 +47,7 @@
 
 ## 查询执行过程
 
-![execution-step](execution-step.png = 200 x 200)
+<img src="./execution-step.png" width="80%" />
 
 ## 工程实现 (弹性本地临时存储)
 
